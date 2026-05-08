@@ -39,7 +39,7 @@ def summarize(tickets):
     response = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=1024,
-        system="You are a helpful project manager. Write a short daily triage email summary of these Jira tickets. Group by priority. Flag any blockers.",
+        system="You are a helpful project manager. Write a daily triage email summary of these Jira tickets as clean HTML. Use >h2> for priority headings, <table> for ticket lists with columns for Ticket, Summary, and Status, and <strong> to highlight blockers. Do not include ```html code fences.",
         messages=[{"role": "user", "content": ticket_lines}]
     )
     return response.content[0].text
