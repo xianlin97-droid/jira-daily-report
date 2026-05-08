@@ -11,12 +11,16 @@ def fetch_tickets():
     domain = os.environ["JIRA_DOMAIN"]
     auth = b64encode(f"{email}:{token}".encode()).decode()
 
-    response = requests.post(
+        response = requests.post(
         f"https://{domain}.atlassian.net/rest/api/3/search/jql",
-        headers={"Authorization": f"Basic {auth}", "Accept": "application/json"}, "Content-Type": "application/json"},
+        headers={
+            "Authorization": f"Basic {auth}",
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
         json={
             "jql": "project = SD AND updated >= -1d ORDER BY priority DESC",
-            "fields": "summary,status,priority,assignee"
+            "fields": ["summary", "status", "priority", "assignee"]
         }
     )
     response.raise_for_status()
