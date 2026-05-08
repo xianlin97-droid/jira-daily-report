@@ -4,14 +4,14 @@ from datetime import date
 from base64 import b64encode
 import anthropic
 
-# --- Step 1: Fetch tickets from Jira ---
+
 def fetch_tickets():
     email = os.environ["JIRA_EMAIL"]
     token = os.environ["JIRA_TOKEN"]
     domain = os.environ["JIRA_DOMAIN"]
     auth = b64encode(f"{email}:{token}".encode()).decode()
 
-        response = requests.post(
+    response = requests.post(
         f"https://{domain}.atlassian.net/rest/api/3/search/jql",
         headers={
             "Authorization": f"Basic {auth}",
@@ -26,7 +26,7 @@ def fetch_tickets():
     response.raise_for_status()
     return response.json()["issues"]
 
-# --- Step 2: Ask Claude to summarize ---
+
 def summarize(tickets):
     ticket_lines = "\n".join([
         f"- [{t['key']}] {t['fields']['summary']} | "
@@ -44,7 +44,7 @@ def summarize(tickets):
     )
     return response.content[0].text
 
-# --- Step 3: Send via Power Automate ---
+
 def send_email(report):
     webhook_url = os.environ["POWER_AUTOMATE_WEBHOOK_URL"]
     requests.post(webhook_url, json={
@@ -52,7 +52,7 @@ def send_email(report):
         "body": report
     })
 
-# --- Run everything ---
+
 tickets = fetch_tickets()
 if tickets:
     report = summarize(tickets)
